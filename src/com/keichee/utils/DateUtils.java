@@ -1,12 +1,14 @@
 package com.keichee.utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
-import java.text.SimpleDateFormat;
 
 /**
  * 날짜 관련 유틸
@@ -16,7 +18,8 @@ public class DateUtils {
 
 	public static final DateUtils instance =  new DateUtils();
 	private final DateTimeFormatter formatter_19 = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-	private final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	private final DateTimeFormatter formatter_23 = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
+	private final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 	
 	/**
 	 * 기본 날짜를 format에 맞게 반환
@@ -66,4 +69,52 @@ public class DateUtils {
 		return dtc.compareTo(dt.plusMinutes(minutes));
 	}
 	
+	/**
+	 * 현재 시간을 UTC 시간으로 반환
+	 * @return dttm23
+	 */
+	public String getCurrentDttmAsUTC() {
+		DateTime dt = new DateTime(DateTimeZone.UTC);
+		return dt.toString();
+	}
+	/**
+	 * 로컬 시간을 UTC 시간으로 변경
+	 * @param dttm
+	 * @return UTC dttm23
+	 * @throws ParseException
+	 */
+	public String getLocalToUTC(String dttm23) throws ParseException {
+		DateTime dt = DateTime.parse(dttm23, formatter_23);
+		dt = dt.toDateTime(DateTimeZone.UTC);
+		return dt.toString();
+	}
+	/**
+	 * UTC 시간을 로컬 시간으로 변경
+	 * @param dttm23
+	 * @return Local dttm23
+	 * @throws ParseException
+	 */
+	public String getUtcToLocal(String dttm23) throws ParseException {
+		dttm23 = dttm23.replace("T", " ").replace("Z", "");
+		SimpleDateFormat df = new SimpleDateFormat(DEFAULT_FORMAT);
+		df.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Date d = df.parse(dttm23);
+		DateTime dt = new DateTime(d);
+		dt = dt.toDateTime(DateTimeZone.getDefault());
+		return dt.toString().replace("T", " ").substring(0, 23);
+	}
+	
+	public static void main(String[] args) throws ParseException {
+		DateUtils du = new DateUtils();
+		
+		String nowLocal = du.getCurrentDttm(du.DEFAULT_FORMAT);
+		System.out.println("nowLocal: " + nowLocal);
+		
+		String nowUtc = du.getLocalToUTC(nowLocal);
+		System.out.println("nowUTC: " + nowUtc);
+		
+		nowLocal = du.getUtcToLocal(nowUtc);
+		System.out.println("nowLocal: " + nowLocal);
+		
+	}
 }
