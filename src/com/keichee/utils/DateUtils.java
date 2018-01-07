@@ -19,7 +19,7 @@ public class DateUtils {
 	public static final DateUtils instance =  new DateUtils();
 	private final DateTimeFormatter formatter_19 = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 	private final DateTimeFormatter formatter_23 = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
-	private final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+	private final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	
 	/**
 	 * 기본 날짜를 format에 맞게 반환
@@ -83,22 +83,22 @@ public class DateUtils {
 	 * @return UTC dttm23
 	 * @throws ParseException
 	 */
-	public String getLocalToUTC(String dttm23) throws ParseException {
-		DateTime dt = DateTime.parse(dttm23, formatter_23);
+	public String getLocalToUTC(String dttm19) throws ParseException {
+		DateTime dt = DateTime.parse(dttm19, formatter_19);
 		dt = dt.toDateTime(DateTimeZone.UTC);
 		return dt.toString();
 	}
 	/**
 	 * UTC 시간을 로컬 시간으로 변경
-	 * @param dttm23
+	 * @param dttm19
 	 * @return Local dttm23
 	 * @throws ParseException
 	 */
-	public String getUtcToLocal(String dttm23) throws ParseException {
-		dttm23 = dttm23.replace("T", " ").replace("Z", "");
+	public String getUtcToLocal(String dttm19) throws ParseException {
+		dttm19 = dttm19.replace("T", " ").replace("Z", "");
 		SimpleDateFormat df = new SimpleDateFormat(DEFAULT_FORMAT);
 		df.setTimeZone(TimeZone.getTimeZone("UTC"));
-		Date d = df.parse(dttm23);
+		Date d = df.parse(dttm19);
 		DateTime dt = new DateTime(d);
 		dt = dt.toDateTime(DateTimeZone.getDefault());
 		return dt.toString().replace("T", " ").substring(0, 23);
